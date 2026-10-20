@@ -1,4 +1,60 @@
-# Network Tank Arena
+# **Network Tank Arena**
+
+
+## Problem 
+
+Combat networking 
+
+
+
+## Baseline 
+
+One tank per client can be moved around using WASD and aim in the direction of the mouse, the cannon rotating toward mouse location 
+
+
+
+## Plan 
+
+I will implement server-authoritative projectile combat where clients need to agree on health, hits and death, while invalid firing requests are rejected. 
+
+- Projectile hits generate push-back, applied on the server, replicated down 
+
+- Death makes tanks non moveable and changes the appearance of the tank (state change) 
+
+- Projectiles can destroy parts of the level (state change, nice to have) 
+
+
+### Simple projectile shot flow:  
+
+- Client requests to shoot through RPC ->  
+
+- Server validates and spawns projectile -> 
+
+- Spawned actor-projectile that replicates is at the same time spawned on all connected clients -> 
+
+- Projectile movement is handled serverside and replicated down to client ->  
+
+- Collisions are handled serverside and replicated down ->  
+
+- Potential changes from the projectile collision are applied serverside and then replicated to client 
+
+
+
+## Evidence 
+
+I will test mostly through repeatable tests and make sure that: 
+
+- Client actions can not violate authoritative truth, so shots cannot be fired if player has no ammo or if cannon is on cooldown 
+
+- Death is synchronized to all clients and hits are registered correctly for server and client. 
+
+- Make sure that, under network limitations, important packages still reach their destinations, while less important ones can be dropped, so combat should adhere to the same rules and timing regardless of network condition. 
+
+
+----------------------
+
+
+### Starter readme below:
 
 Student starter for the Network Programming lab. Requires **Unreal Engine 5.7.4**
 and the Windows C++ toolchain required by Unreal. Open `NetworkTankArena.uproject`
