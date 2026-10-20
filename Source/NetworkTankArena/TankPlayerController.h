@@ -45,6 +45,8 @@ private:
 	void SubmitLocalControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
 	void AcceptControlIntent(ATankPawn* TargetTank, const FTankControlIntent& Intent);
 
+	void RequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	void RequestChargeProjectile();
 	void UpdateThrottle(const FInputActionValue& Value);
 	void UpdateTurn(const FInputActionValue& Value);
 	void ClearThrottle();
@@ -55,8 +57,16 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputAction> ThrottleAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputAction> TurnAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
+	TObjectPtr<UInputAction> FireAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
+	TObjectPtr<UInputAction> ChargeFireAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputMappingContext> TankMappingContext;
 
