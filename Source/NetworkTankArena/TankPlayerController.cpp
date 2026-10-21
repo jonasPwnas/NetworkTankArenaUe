@@ -86,7 +86,7 @@ void ATankPlayerController::ClearCachedInput()
 		else if (IsLocalController())
 		{
 			// A lost neutral packet is repaired by the following periodic heartbeat.
-			SubmitLocalControlIntent(Tank, FTankControlIntent{});
+			LocalSubmitControlIntent(Tank, FTankControlIntent{});
 		}
 	}
 }
@@ -134,14 +134,14 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 		SecondsUntilInputSend -= DeltaTime;
 		if (SecondsUntilInputSend <= UE_SMALL_NUMBER)
 		{
-			SubmitLocalControlIntent(Tank, Intent);
+			LocalSubmitControlIntent(Tank, Intent);
 			// No catch-up burst after a slow frame. Send full current state even when neutral.
 			SecondsUntilInputSend = InputSendIntervalSeconds;
 		}
 	}
 }
 
-void ATankPlayerController::SubmitLocalControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent)
+void ATankPlayerController::LocalSubmitControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent)
 {
 	if (IsLocalController() && IsValid(Tank) && GetPawn() == Tank && Tank->GetController() == this)
 	{
@@ -165,14 +165,27 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 	}
 }
 
-void ATankPlayerController::RequestFireProjectile(FVector FireDirection, float ProjectilePower)
+void ATankPlayerController::ServerRequestChargeProjectile_Implementation()
+{
+}
+
+void ATankPlayerController::LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower)
 {
 	//Do cool shiet
 }
 
-void ATankPlayerController::RequestChargeProjectile()
+void ATankPlayerController::LocalRequestChargeProjectile()
 {
 	//Do cooler shiet
+}
+
+void ATankPlayerController::ServerChargeProjectile_Implementation()
+{
+	
+}
+
+void ATankPlayerController::ServerRequestFireProjectile_Implementation(FVector FireDirection, float ProjectilePower)
+{
 }
 
 void ATankPlayerController::AcknowledgePossession(APawn* P)

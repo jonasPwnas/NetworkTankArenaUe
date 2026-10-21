@@ -40,13 +40,25 @@ private:
 	friend class FTankMultiplayerLifecycleTest;
 	friend class FTankMultiplayerContentTest;
 
-	UFUNCTION(Server, Unreliable)
+	//Movement replication
+	UFUNCTION(Server, Reliable)
 	void ServerSubmitControlIntent(ATankPawn* TargetTank, FTankControlIntent Intent);
-	void SubmitLocalControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
+	void LocalSubmitControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
 	void AcceptControlIntent(ATankPawn* TargetTank, const FTankControlIntent& Intent);
 
-	void RequestFireProjectile(FVector FireDirection, float ProjectilePower);
-	void RequestChargeProjectile();
+	//Charge replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestChargeProjectile();
+	void LocalRequestChargeProjectile();
+	UFUNCTION(Server, Reliable)
+	void ServerChargeProjectile();
+	
+	//Fire replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	void LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	
+	
 	void UpdateThrottle(const FInputActionValue& Value);
 	void UpdateTurn(const FInputActionValue& Value);
 	void ClearThrottle();

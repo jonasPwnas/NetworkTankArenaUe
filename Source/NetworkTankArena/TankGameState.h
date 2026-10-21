@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TankMatchPhase.h"
 #include "GameFramework/GameStateBase.h"
 #include "TankGameState.generated.h"
 
@@ -13,4 +14,19 @@ UCLASS()
 class NETWORKTANKARENA_API ATankGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+	
+public:
+	//ETankMatchPhase GetMatchPhase{ } const { return MatchPhase; }
+	
+	//void SetMatchPhaseFromServer(ETankMatchPhase NewMatchPhase);
+	
+	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
+	//UFUNCTION()
+	//OnRep_MatchPhase();
+
+	//UPROPERTY(ReplicatedUsing=OnRep_MatchPhase)
+	//ETankMatchPhase MatchPhase;
+
 };
