@@ -234,6 +234,7 @@ void ATankPlayerController::ApplyTankInputContext()
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	if (!Subsystem || !TankMappingContext)
 	{
+				// Maybe wanna add an error, warning or message if these are null?
 		return; // Asset references are intentionally supplied by a later Blueprint child.
 	}
 	if (MappingSubsystem.Get() == Subsystem && AppliedMappingContext == TankMappingContext)

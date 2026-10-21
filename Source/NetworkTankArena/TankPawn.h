@@ -30,6 +30,9 @@ public:
 	void ClearControlIntent();
 	double GetGameplayPlaneZ() const;
 	float GetCanonicalTurretWorldYaw() const { return CanonicalTurretWorldYaw; }
+	
+	UFUNCTION(BlueprintNativeEvent, Blueprintable)
+	FVector GetCannonFireLocation() const;
 
 protected:
 	virtual void BeginPlay() override;

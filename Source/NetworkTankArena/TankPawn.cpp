@@ -78,6 +78,11 @@ UPawnMovementComponent* ATankPawn::GetMovementComponent() const
 	return TankMovement;
 }
 
+FVector ATankPawn::GetCannonFireLocation_Implementation() const
+{
+	return GetActorLocation();
+}
+
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
