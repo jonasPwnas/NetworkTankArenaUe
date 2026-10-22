@@ -83,6 +83,10 @@ FVector ATankPawn::GetCannonFireLocation_Implementation() const
 	return GetActorLocation();
 }
 
+void ATankPawn::LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower)
+{
+}
+
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
@@ -132,6 +136,22 @@ void ATankPawn::ClearControlIntent()
 double ATankPawn::GetGameplayPlaneZ() const
 {
 	return TankMovement->GetGameplayPlaneZ();
+}
+
+void ATankPawn::LocalRequestChargeProjectile()
+{
+}
+
+void ATankPawn::ServerRequestFireProjectile_Implementation(FVector FireDirection, float ProjectilePower)
+{
+}
+
+void ATankPawn::ServerChargeProjectile_Implementation()
+{
+}
+
+void ATankPawn::ServerRequestChargeProjectile_Implementation()
+{
 }
 
 void ATankPawn::Tick(float DeltaTime)

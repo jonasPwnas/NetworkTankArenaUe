@@ -45,19 +45,6 @@ private:
 	void ServerSubmitControlIntent(ATankPawn* TargetTank, FTankControlIntent Intent);
 	void LocalSubmitControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
 	void AcceptControlIntent(ATankPawn* TargetTank, const FTankControlIntent& Intent);
-
-	//Charge replication
-	UFUNCTION(Server, Reliable)
-	void ServerRequestChargeProjectile();
-	void LocalRequestChargeProjectile();
-	UFUNCTION(Server, Reliable)
-	void ServerChargeProjectile();
-	
-	//Fire replication
-	UFUNCTION(Server, Reliable)
-	void ServerRequestFireProjectile(FVector FireDirection, float ProjectilePower);
-	void LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower);
-	
 	
 	void UpdateThrottle(const FInputActionValue& Value);
 	void UpdateTurn(const FInputActionValue& Value);

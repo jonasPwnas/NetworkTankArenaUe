@@ -165,29 +165,6 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 	}
 }
 
-void ATankPlayerController::ServerRequestChargeProjectile_Implementation()
-{
-}
-
-void ATankPlayerController::LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower)
-{
-	//Do cool shiet
-}
-
-void ATankPlayerController::LocalRequestChargeProjectile()
-{
-	//Do cooler shiet
-}
-
-void ATankPlayerController::ServerChargeProjectile_Implementation()
-{
-	
-}
-
-void ATankPlayerController::ServerRequestFireProjectile_Implementation(FVector FireDirection, float ProjectilePower)
-{
-}
-
 void ATankPlayerController::AcknowledgePossession(APawn* P)
 {
 	ClearCachedInput();

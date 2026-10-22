@@ -34,6 +34,18 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Blueprintable)
 	FVector GetCannonFireLocation() const;
 
+	//Charge replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestChargeProjectile();
+	void LocalRequestChargeProjectile();
+	UFUNCTION(Server, Reliable)
+	void ServerChargeProjectile();
+	
+	//Fire replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	void LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
