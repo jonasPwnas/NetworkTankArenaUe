@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "TankControlIntent.h"
+#include "NetworkedCombat/TankProjectile.h"
 #include "TankPawn.generated.h"
 
 class UCapsuleComponent;
@@ -43,8 +44,8 @@ public:
 	
 	//Fire replication
 	UFUNCTION(Server, Reliable)
-	void ServerRequestFireProjectile(FVector FireDirection, float ProjectilePower);
-	void LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower);
+	void ServerRequestFireProjectile(FVector FireDirection);
+	void LocalRequestFireProjectile();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -61,6 +62,9 @@ private:
 	void UpdateControllerTickPrerequisite();
 	void ApplyPresentation(float DeltaTime);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tank|Combat")
+	TSubclassOf<ATankProjectile> ProjectileClass;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCapsuleComponent> CollisionRoot;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
@@ -81,7 +85,7 @@ private:
 	TObjectPtr<UCameraComponent> FollowCamera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTankMovementComponent> TankMovement;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Presentation", meta = (ClampMin = "0", Units = "cm"))
 	float HoverAmplitude = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Presentation", meta = (ClampMin = "0", Units = "Hz"))
@@ -103,5 +107,7 @@ private:
 	double HoverPhase = 0.0;
 	float CurrentBankDegrees = 0.f;
 	float PreviousPresentationYaw = 0.f;
+	float CurrentChargePower = 0.f;
+	bool bCanFire = false;
 	TWeakObjectPtr<AController> TickController;
 };

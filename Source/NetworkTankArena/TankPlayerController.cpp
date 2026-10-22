@@ -16,6 +16,18 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	ApplyTankInputContext();
+	SetControlledTank();
+	if (!ControlledTank)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cast to TANK pawn failed, retrying"));
+		GetWorldTimerManager().SetTimer(SetTankTimer, this, &ATankPlayerController::SetControlledTank,
+			0.6f, false);
+	}
+}
+
+void ATankPlayerController::SetControlledTank()
+{
+	ControlledTank = Cast<ATankPawn>(GetPawn());
 }
 
 void ATankPlayerController::ReceivedPlayer()
@@ -47,6 +59,16 @@ void ATankPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATankPlayerController::UpdateTurn);
 		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Completed, this, &ATankPlayerController::ClearTurn);
 		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Canceled, this, &ATankPlayerController::ClearTurn);
+	}
+	
+	if (FireAction)
+	{
+		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryFire);
+	}
+	
+	if (ChargeFireAction)
+	{
+		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryCharge);
 	}
 }
 
@@ -163,6 +185,16 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 	{
 		TargetTank->SubmitControlIntent(Intent); // Pawn sanitizes again at the authority boundary.
 	}
+}
+
+void ATankPlayerController::TryFire(const FInputActionValue& Value)
+{
+	ControlledTank->LocalRequestFireProjectile();
+}
+
+void ATankPlayerController::TryCharge(const FInputActionValue& Value)
+{
+	ControlledTank->LocalRequestChargeProjectile();
 }
 
 void ATankPlayerController::AcknowledgePossession(APawn* P)

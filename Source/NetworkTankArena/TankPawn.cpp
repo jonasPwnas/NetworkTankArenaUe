@@ -83,10 +83,6 @@ FVector ATankPawn::GetCannonFireLocation_Implementation() const
 	return GetActorLocation();
 }
 
-void ATankPawn::LocalRequestFireProjectile(FVector FireDirection, float ProjectilePower)
-{
-}
-
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
@@ -114,6 +110,8 @@ void ATankPawn::BeginPlay()
 	PreviousPresentationYaw = NormalizeYaw(GetActorRotation().Yaw);
 	UpdateControllerTickPrerequisite();
 	ApplyPresentation(0.f);
+	
+	bCanFire = HasAuthority();
 }
 
 void ATankPawn::SubmitControlIntent(const FTankControlIntent& Intent)
@@ -142,8 +140,20 @@ void ATankPawn::LocalRequestChargeProjectile()
 {
 }
 
-void ATankPawn::ServerRequestFireProjectile_Implementation(FVector FireDirection, float ProjectilePower)
+void ATankPawn::ServerRequestFireProjectile_Implementation(FVector FireDirection)
 {
+	if (bCanFire)
+	{
+		GetWorld()->SpawnActor<ATankProjectile>(ProjectileClass, FireDirection, FireDirection.Rotation());
+		bCanFire = false;
+	}
+}
+
+void ATankPawn::LocalRequestFireProjectile() //Client
+{
+	FVector FireDirection = GetCannonFireLocation();
+	FireDirection.X = GetCannonFireLocation().X * 2;
+	ServerRequestFireProjectile_Implementation(FireDirection);
 }
 
 void ATankPawn::ServerChargeProjectile_Implementation()

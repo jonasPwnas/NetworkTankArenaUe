@@ -46,6 +46,10 @@ private:
 	void LocalSubmitControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
 	void AcceptControlIntent(ATankPawn* TargetTank, const FTankControlIntent& Intent);
 	
+	void TryFire(const FInputActionValue& Value);
+	void TryCharge(const FInputActionValue& Value);
+	
+	void SetControlledTank();
 	void UpdateThrottle(const FInputActionValue& Value);
 	void UpdateTurn(const FInputActionValue& Value);
 	void ClearThrottle();
@@ -54,6 +58,10 @@ private:
 	void ApplyTankInputContext();
 	void RemoveTankInputContext();
 
+	//Cast and save on begin play, but use interface or delegates if we want more pawn options.
+	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
+	ATankPawn* ControlledTank;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputAction> ThrottleAction;
 	
@@ -69,6 +77,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputMappingContext> TankMappingContext;
 
+	FTimerHandle SetTankTimer;
+	
 	float CachedThrottle = 0.f;
 	float CachedTurn = 0.f;
 	static constexpr float InputSendIntervalSeconds = 1.f / 20.f;
