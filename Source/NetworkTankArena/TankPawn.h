@@ -34,18 +34,8 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Blueprintable)
 	FTransform GetCannonFireTransform() const;
+	TSubclassOf<ATankProjectile> GetProjectile();
 
-	//Charge replication
-	UFUNCTION(Server, Reliable)
-	void ServerRequestChargeProjectile();
-	void LocalRequestChargeProjectile();
-	UFUNCTION(Server, Reliable)
-	void ServerChargeProjectile();
-	
-	//Fire replication
-	UFUNCTION(Server, Reliable)
-	void ServerRequestFireProjectile(FTransform FireTransform);
-	void LocalRequestFireProjectile();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -61,7 +51,6 @@ private:
 
 	void UpdateControllerTickPrerequisite();
 	void ApplyPresentation(float DeltaTime);
-	void AllowFire();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Combat")
 	TSubclassOf<ATankProjectile> ProjectileClass;
@@ -108,8 +97,5 @@ private:
 	double HoverPhase = 0.0;
 	float CurrentBankDegrees = 0.f;
 	float PreviousPresentationYaw = 0.f;
-	float CurrentChargePower = 0.f;
-	bool bCanFire = true;
-	FTimerHandle FireCooldownHandle;
 	TWeakObjectPtr<AController> TickController;
 };

@@ -46,6 +46,19 @@ private:
 	void LocalSubmitControlIntent(ATankPawn* Tank, const FTankControlIntent& Intent);
 	void AcceptControlIntent(ATankPawn* TargetTank, const FTankControlIntent& Intent);
 	
+	//Charge replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestChargeProjectile();
+	void LocalRequestChargeProjectile();
+	UFUNCTION(Server, Reliable)
+	void ServerChargeProjectile();
+	
+	//Fire replication
+	UFUNCTION(Server, Reliable)
+	void ServerRequestFireProjectile(FTransform FireTransform);
+	void LocalRequestFireProjectile();
+	
+	void AllowFire();
 	void TryFire(const FInputActionValue& Value);
 	void TryCharge(const FInputActionValue& Value);
 	
@@ -78,6 +91,10 @@ private:
 	TObjectPtr<UInputMappingContext> TankMappingContext;
 
 	FTimerHandle SetTankTimer;
+	
+	float CurrentChargePower = 0.f;
+	bool bCanFire = true;
+	FTimerHandle FireCooldownHandle;
 	
 	float CachedThrottle = 0.f;
 	float CachedTurn = 0.f;

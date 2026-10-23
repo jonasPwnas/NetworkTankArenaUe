@@ -83,6 +83,11 @@ FTransform ATankPawn::GetCannonFireTransform_Implementation() const
 	return GetActorTransform();
 }
 
+TSubclassOf<ATankProjectile> ATankPawn::GetProjectile()
+{
+	return ProjectileClass;
+}
+
 void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
@@ -135,38 +140,6 @@ void ATankPawn::ClearControlIntent()
 double ATankPawn::GetGameplayPlaneZ() const
 {
 	return TankMovement->GetGameplayPlaneZ();
-}
-
-void ATankPawn::LocalRequestChargeProjectile()
-{
-}
-
-void ATankPawn::ServerRequestFireProjectile_Implementation(FTransform FireTrans)
-{
-	if (!HasAuthority()) return;
-		
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Try spawn projectile"));
-	
-	if (bCanFire)
-	{
-		GetWorld()->SpawnActor<ATankProjectile>(ProjectileClass, FireTrans.GetLocation(), FireTrans.Rotator());
-		bCanFire = false;
-		GetWorldTimerManager().SetTimer(FireCooldownHandle, this,
-			&ATankPawn::AllowFire, 1.0f, false);
-	}
-}
-
-void ATankPawn::LocalRequestFireProjectile() //Client
-{
-	ServerRequestFireProjectile_Implementation(GetCannonFireTransform());
-}
-
-void ATankPawn::ServerChargeProjectile_Implementation()
-{
-}
-
-void ATankPawn::ServerRequestChargeProjectile_Implementation()
-{
 }
 
 void ATankPawn::Tick(float DeltaTime)
@@ -245,11 +218,6 @@ void ATankPawn::ApplyPresentation(float DeltaTime)
 	ChassisVisualPivot->SetRelativeRotation(BaseChassisTransform.Rotator() + FRotator(0.0, 0.0, CurrentBankDegrees));
 	TurretYawPivot->SetRelativeRotation(FRotator(0.0,
 		CalculateRelativeTurretYaw(GetActorRotation().Yaw, CanonicalTurretWorldYaw), 0.0));
-}
-
-void ATankPawn::AllowFire()
-{
-	bCanFire = true;
 }
 
 void ATankPawn::UpdateControllerTickPrerequisite()

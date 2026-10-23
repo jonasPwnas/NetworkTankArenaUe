@@ -71,12 +71,12 @@ void ATankPlayerController::SetupInputComponent()
 	
 	if (FireAction)
 	{
-		EnhancedInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryFire);
+		EnhancedInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::LocalRequestFireProjectile);
 	}
 	
 	if (ChargeFireAction)
 	{
-		EnhancedInput->BindAction(ChargeFireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryCharge);
+		EnhancedInput->BindAction(ChargeFireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::LocalRequestChargeProjectile);
 	}
 }
 
@@ -195,15 +195,55 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 	}
 }
 
+
+void ATankPlayerController::LocalRequestChargeProjectile()
+{
+}
+
+void ATankPlayerController::ServerRequestFireProjectile_Implementation(FTransform FireTrans)
+{
+	if (!HasAuthority()) return;
+		
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Try spawn projectile"));
+	
+	if (bCanFire)
+	{
+		GetWorld()->SpawnActor<ATankProjectile>(ControlledTank->GetProjectile(), FireTrans.GetLocation(), FireTrans.Rotator());
+		bCanFire = false;
+		GetWorldTimerManager().SetTimer(FireCooldownHandle, this, &ATankPlayerController::AllowFire, 1.0f, false);
+	}
+}
+
+void ATankPlayerController::LocalRequestFireProjectile() //Client
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Big Try Fire!! wow"));
+	
+	if (!ControlledTank) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Tank ref is invalid"));
+	ServerRequestFireProjectile(ControlledTank->GetCannonFireTransform());
+}
+
+void ATankPlayerController::AllowFire()
+{
+	bCanFire = true;
+}
+
+void ATankPlayerController::ServerChargeProjectile_Implementation()
+{
+}
+
+void ATankPlayerController::ServerRequestChargeProjectile_Implementation()
+{
+}
+
+
 void ATankPlayerController::TryFire(const FInputActionValue& Value)
 {
-	if (!ControlledTank) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Tank ref is invalid"));
-	ControlledTank->LocalRequestFireProjectile();
+
 }
 
 void ATankPlayerController::TryCharge(const FInputActionValue& Value)
 {
-	ControlledTank->LocalRequestChargeProjectile();
+	ServerRequestChargeProjectile();
 }
 
 void ATankPlayerController::AcknowledgePossession(APawn* P)
