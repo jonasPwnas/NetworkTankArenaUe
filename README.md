@@ -15,13 +15,10 @@ One tank per client can be moved around using WASD and aim in the direction of t
 
 ## Plan 
 
-I will implement server-authoritative projectile combat where clients need to agree on health, hits and death, while invalid firing requests are rejected. 
+I will implement server-authoritative projectile shooting where clients need to agree on spawning of projectiles, and the power the projectiles spawn with.
 
-- Projectile hits generate push-back, applied on the server, replicated down 
-
-- Death makes tanks non moveable and changes the appearance of the tank (state change) 
-
-- Projectiles can destroy parts of the level (state change, nice to have) 
+- Projectiles are spawned on all clients when a player fires the cannon
+- When a player charges the cannon this is visualized on all clients and affects the size of the spawned projectile
 
 
 ### Simple projectile shot flow:  
@@ -32,11 +29,9 @@ I will implement server-authoritative projectile combat where clients need to ag
 
 - Spawned actor-projectile that replicates is at the same time spawned on all connected clients -> 
 
-- Projectile movement is handled serverside and replicated down to client ->  
+- Projectile movement is handled serverside and replicated down to client
 
-- Collisions are handled serverside and replicated down ->  
-
-- Potential changes from the projectile collision are applied serverside and then replicated to client 
+- If the firing player charged before the projectile was fired, the spawned projectile and visual components are matching in size and intensity
 
 
 
@@ -44,9 +39,7 @@ I will implement server-authoritative projectile combat where clients need to ag
 
 I will test mostly through repeatable tests and make sure that: 
 
-- Client actions can not violate authoritative truth, so shots cannot be fired if player has no ammo or if cannon is on cooldown 
-
-- Death is synchronized to all clients and hits are registered correctly for server and client. 
+- Client actions can not violate authoritative truth, so shots cannot be fired if cannon is on cooldown 
 
 - Make sure that, under network limitations, important packages still reach their destinations, while less important ones can be dropped, so combat should adhere to the same rules and timing regardless of network condition. 
 
