@@ -34,6 +34,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Blueprintable)
 	FTransform GetCannonFireTransform() const;
+	UFUNCTION(BlueprintNativeEvent, Blueprintable)
 	TSubclassOf<ATankProjectile> GetProjectile();
 
 	
@@ -52,7 +53,7 @@ private:
 	void UpdateControllerTickPrerequisite();
 	void ApplyPresentation(float DeltaTime);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Tank|Combat")
+	UPROPERTY(EditAnywhere, Blueprintable, Category = "Tank|Combat")
 	TSubclassOf<ATankProjectile> ProjectileClass;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))

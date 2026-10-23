@@ -198,26 +198,55 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 
 void ATankPlayerController::LocalRequestChargeProjectile()
 {
+	ServerRequestChargeProjectile();
+}
+
+void ATankPlayerController::StopChargeCosmetics_Implementation()
+{
+	OnStopChargeCosmetics();
+}
+
+void ATankPlayerController::StartChargeCosmetics_Implementation()
+{
+	OnStartChargeCosmetics();
 }
 
 void ATankPlayerController::ServerRequestFireProjectile_Implementation(FTransform FireTrans)
 {
 	if (!HasAuthority()) return;
-		
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Try spawn projectile"));
+	
+	StopChargeCosmetics();
 	
 	if (bCanFire)
 	{
-		GetWorld()->SpawnActor<ATankProjectile>(ControlledTank->GetProjectile(), FireTrans.GetLocation(), FireTrans.Rotator());
+		if (ATankProjectile* CoolProjectile = GetWorld()->SpawnActorDeferred<ATankProjectile>(ControlledTank->GetProjectile(), FireTrans))
+		{
+			CoolProjectile->SetOwner(this);
+			CoolProjectile->SetInstigator(ControlledTank);
+			if (StartChargeTimeStamp > 0)
+			{
+				CoolProjectile->ProjectilePower = GetWorld()->GetTimeSeconds() - StartChargeTimeStamp;
+				StartChargeTimeStamp = 0;
+			}
+			CoolProjectile->FinishSpawning(FireTrans);
+		}
 		bCanFire = false;
 		GetWorldTimerManager().SetTimer(FireCooldownHandle, this, &ATankPlayerController::AllowFire, 1.0f, false);
 	}
 }
 
+void ATankPlayerController::OnStartChargeCosmetics_Implementation()
+{
+	//Start things in blueprint
+}
+
+void ATankPlayerController::OnStopChargeCosmetics_Implementation()
+{
+	//Stop things in blueprint
+}
+
 void ATankPlayerController::LocalRequestFireProjectile() //Client
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Big Try Fire!! wow"));
-	
 	if (!ControlledTank) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Tank ref is invalid"));
 	ServerRequestFireProjectile(ControlledTank->GetCannonFireTransform());
 }
@@ -229,21 +258,18 @@ void ATankPlayerController::AllowFire()
 
 void ATankPlayerController::ServerChargeProjectile_Implementation()
 {
+	StartChargeTimeStamp = GetWorld()->GetTimeSeconds();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+		FString::Printf(TEXT("Started charge at time: %f"), GetWorld()->GetTimeSeconds()));
 }
 
 void ATankPlayerController::ServerRequestChargeProjectile_Implementation()
 {
-}
-
-
-void ATankPlayerController::TryFire(const FInputActionValue& Value)
-{
-
-}
-
-void ATankPlayerController::TryCharge(const FInputActionValue& Value)
-{
-	ServerRequestChargeProjectile();
+	if (HasAuthority())
+	{
+		StartChargeCosmetics();
+		ServerChargeProjectile();
+	}
 }
 
 void ATankPlayerController::AcknowledgePossession(APawn* P)

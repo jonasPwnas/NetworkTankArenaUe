@@ -83,7 +83,7 @@ FTransform ATankPawn::GetCannonFireTransform_Implementation() const
 	return GetActorTransform();
 }
 
-TSubclassOf<ATankProjectile> ATankPawn::GetProjectile()
+TSubclassOf<ATankProjectile> ATankPawn::GetProjectile_Implementation()
 {
 	return ProjectileClass;
 }

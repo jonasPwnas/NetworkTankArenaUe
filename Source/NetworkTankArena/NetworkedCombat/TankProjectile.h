@@ -16,7 +16,10 @@ class NETWORKTANKARENA_API ATankProjectile : public AActor
 public:
 	// Sets default values for this actor's properties
 	ATankProjectile();
+
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Settings", meta = (ExposeOnSpawn = true))
+	float ProjectilePower = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile Settings")
 	float MaxProjectileSpeed = 2000.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile Settings")

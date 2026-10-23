@@ -29,6 +29,11 @@ public:
 	UFUNCTION(Exec, BlueprintCallable, Category = "Tank|Localhost")
 	void JoinLocalhost();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnStartChargeCosmetics();
+	UFUNCTION(BlueprintNativeEvent)
+	void OnStopChargeCosmetics();
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void ReceivedPlayer() override;
@@ -52,15 +57,16 @@ private:
 	void LocalRequestChargeProjectile();
 	UFUNCTION(Server, Reliable)
 	void ServerChargeProjectile();
+	UFUNCTION(NetMulticast, Unreliable)
+	void StartChargeCosmetics();
+	UFUNCTION(NetMulticast, Reliable)
+	void StopChargeCosmetics();
 	
 	//Fire replication
 	UFUNCTION(Server, Reliable)
 	void ServerRequestFireProjectile(FTransform FireTransform);
 	void LocalRequestFireProjectile();
-	
 	void AllowFire();
-	void TryFire(const FInputActionValue& Value);
-	void TryCharge(const FInputActionValue& Value);
 	
 	void SetControlledTank();
 	void UpdateThrottle(const FInputActionValue& Value);
@@ -92,9 +98,10 @@ private:
 
 	FTimerHandle SetTankTimer;
 	
-	float CurrentChargePower = 0.f;
+	double StartChargeTimeStamp = 0;
 	bool bCanFire = true;
 	FTimerHandle FireCooldownHandle;
+	FTimerHandle ChargeFireHandle;
 	
 	float CachedThrottle = 0.f;
 	float CachedTurn = 0.f;
