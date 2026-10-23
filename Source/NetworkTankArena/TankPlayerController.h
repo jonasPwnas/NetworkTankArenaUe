@@ -57,7 +57,7 @@ private:
 	void LocalRequestChargeProjectile();
 	UFUNCTION(Server, Reliable)
 	void ServerChargeProjectile();
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable) //Probably should be unreliable buut it feels better when it is
 	void StartChargeCosmetics();
 	UFUNCTION(NetMulticast, Reliable)
 	void StopChargeCosmetics();
