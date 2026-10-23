@@ -78,9 +78,9 @@ UPawnMovementComponent* ATankPawn::GetMovementComponent() const
 	return TankMovement;
 }
 
-FVector ATankPawn::GetCannonFireLocation_Implementation() const
+FTransform ATankPawn::GetCannonFireTransform_Implementation() const
 {
-	return GetActorLocation();
+	return GetActorTransform();
 }
 
 void ATankPawn::BeginPlay()
@@ -111,7 +111,8 @@ void ATankPawn::BeginPlay()
 	UpdateControllerTickPrerequisite();
 	ApplyPresentation(0.f);
 	
-	bCanFire = HasAuthority();
+	FString Name = GetOwner() ? GetOwner()->GetName() : TEXT("owner is null");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("My owner is:  ") + Name);
 }
 
 void ATankPawn::SubmitControlIntent(const FTankControlIntent& Intent)
@@ -140,20 +141,24 @@ void ATankPawn::LocalRequestChargeProjectile()
 {
 }
 
-void ATankPawn::ServerRequestFireProjectile_Implementation(FVector FireDirection)
+void ATankPawn::ServerRequestFireProjectile_Implementation(FTransform FireTrans)
 {
+	if (!HasAuthority()) return;
+		
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Try spawn projectile"));
+	
 	if (bCanFire)
 	{
-		GetWorld()->SpawnActor<ATankProjectile>(ProjectileClass, FireDirection, FireDirection.Rotation());
+		GetWorld()->SpawnActor<ATankProjectile>(ProjectileClass, FireTrans.GetLocation(), FireTrans.Rotator());
 		bCanFire = false;
+		GetWorldTimerManager().SetTimer(FireCooldownHandle, this,
+			&ATankPawn::AllowFire, 1.0f, false);
 	}
 }
 
 void ATankPawn::LocalRequestFireProjectile() //Client
 {
-	FVector FireDirection = GetCannonFireLocation();
-	FireDirection.X = GetCannonFireLocation().X * 2;
-	ServerRequestFireProjectile_Implementation(FireDirection);
+	ServerRequestFireProjectile_Implementation(GetCannonFireTransform());
 }
 
 void ATankPawn::ServerChargeProjectile_Implementation()
@@ -240,6 +245,11 @@ void ATankPawn::ApplyPresentation(float DeltaTime)
 	ChassisVisualPivot->SetRelativeRotation(BaseChassisTransform.Rotator() + FRotator(0.0, 0.0, CurrentBankDegrees));
 	TurretYawPivot->SetRelativeRotation(FRotator(0.0,
 		CalculateRelativeTurretYaw(GetActorRotation().Yaw, CanonicalTurretWorldYaw), 0.0));
+}
+
+void ATankPawn::AllowFire()
+{
+	bCanFire = true;
 }
 
 void ATankPawn::UpdateControllerTickPrerequisite()

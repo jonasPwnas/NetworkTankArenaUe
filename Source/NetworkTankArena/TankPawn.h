@@ -33,7 +33,7 @@ public:
 	float GetCanonicalTurretWorldYaw() const { return CanonicalTurretWorldYaw; }
 	
 	UFUNCTION(BlueprintNativeEvent, Blueprintable)
-	FVector GetCannonFireLocation() const;
+	FTransform GetCannonFireTransform() const;
 
 	//Charge replication
 	UFUNCTION(Server, Reliable)
@@ -44,7 +44,7 @@ public:
 	
 	//Fire replication
 	UFUNCTION(Server, Reliable)
-	void ServerRequestFireProjectile(FVector FireDirection);
+	void ServerRequestFireProjectile(FTransform FireTransform);
 	void LocalRequestFireProjectile();
 	
 protected:
@@ -61,7 +61,8 @@ private:
 
 	void UpdateControllerTickPrerequisite();
 	void ApplyPresentation(float DeltaTime);
-
+	void AllowFire();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Combat")
 	TSubclassOf<ATankProjectile> ProjectileClass;
 	
@@ -108,6 +109,7 @@ private:
 	float CurrentBankDegrees = 0.f;
 	float PreviousPresentationYaw = 0.f;
 	float CurrentChargePower = 0.f;
-	bool bCanFire = false;
+	bool bCanFire = true;
+	FTimerHandle FireCooldownHandle;
 	TWeakObjectPtr<AController> TickController;
 };

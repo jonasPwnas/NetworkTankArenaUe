@@ -28,6 +28,14 @@ void ATankPlayerController::BeginPlay()
 void ATankPlayerController::SetControlledTank()
 {
 	ControlledTank = Cast<ATankPawn>(GetPawn());
+	
+	if (!ControlledTank)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Cast to TANK pawn failed, retrying"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Cast to TANK pawn failed, retrying"));
+		GetWorldTimerManager().SetTimer(SetTankTimer, this, &ATankPlayerController::SetControlledTank,
+			0.6f, false);
+	}
 }
 
 void ATankPlayerController::ReceivedPlayer()
@@ -63,12 +71,12 @@ void ATankPlayerController::SetupInputComponent()
 	
 	if (FireAction)
 	{
-		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryFire);
+		EnhancedInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryFire);
 	}
 	
 	if (ChargeFireAction)
 	{
-		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryCharge);
+		EnhancedInput->BindAction(ChargeFireAction, ETriggerEvent::Triggered, this, &ATankPlayerController::TryCharge);
 	}
 }
 
@@ -189,6 +197,7 @@ void ATankPlayerController::AcceptControlIntent(ATankPawn* TargetTank, const FTa
 
 void ATankPlayerController::TryFire(const FInputActionValue& Value)
 {
+	if (!ControlledTank) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Tank ref is invalid"));
 	ControlledTank->LocalRequestFireProjectile();
 }
 
