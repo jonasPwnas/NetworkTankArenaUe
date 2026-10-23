@@ -1,5 +1,16 @@
 # **Network Tank Arena**
 
+## How to play in editor
+Open the TestMap level
+Choose 2 players and to play as listen server in the play settings
+Play as listen server in the PIE window and as connecting client in the newly opened window.
+Use WASD to move around
+Hold left mouse to charge the cannon
+Release left mouse to fire the cannon
+
+Notice that projectiles stops when impacting another player
+Notice that visuals match on both server and client when charging and firing.
+
 
 ## Problem 
 
